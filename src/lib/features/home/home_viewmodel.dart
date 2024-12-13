@@ -3,15 +3,13 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:my_app/app/models/todo.dart';
 import 'package:my_app/app/services/todo_service.dart';
+import 'package:my_app/app/app.locator.dart';
+import 'package:my_app/app/app.dialogs.dart';
 
 class HomeViewModel extends BaseViewModel {
-  final TodoService _todoService;
-  final DialogService _dialogService;
+  final TodoService _todoService = locator<TodoService>();
+  final DialogService _dialogService = locator<DialogService>();
   final TextEditingController todoController = TextEditingController();
-
-  HomeViewModel()
-      : _todoService = TodoService(),
-        _dialogService = DialogService();
 
   List<Todo> get todos => _todoService.todos;
 
@@ -38,10 +36,11 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> editTodo(Todo todo) async {
-    final response = await _dialogService.showDialog(
-      dialogData: DialogRequest(
-        data: todo,
-      ),
+    final response = await _dialogService.showCustomDialog(
+      variant: DialogType.todo,
+      title: 'Edit Todo',
+      description: 'Edit the todo item',
+      data: todo,
     );
 
     if (response?.confirmed == true && response?.data != null) {
